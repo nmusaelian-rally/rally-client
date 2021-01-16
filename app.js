@@ -39,14 +39,31 @@ const callSecurity = async() => {
     }
 }
 
-  const parseCookies = (headers) =>  {
+/*   const parseCookies = (headers) =>  {
     const raw = headers.raw()['set-cookie'];
     return raw.map((entry) => {
       const parts = entry.split(';');
       const cookiePart = parts[0];
-      return cookiePart;
+      if (cookiePart.includes('ZSESSIONID=') || cookiePart.includes('JSESSIONID=')){
+        return cookiePart;
+      }
+      
     }).join(';');
+  } */
+
+  const parseCookies = (headers) =>  {
+    const raw = headers.raw()['set-cookie'];
+    const arr = [];
+    raw.forEach((entry) => {
+      const parts = entry.split(';');
+      const cookiePart = parts[0];
+      if (cookiePart.includes('ZSESSIONID=') || cookiePart.includes('JSESSIONID=')){
+        arr.push(cookiePart);
+      } 
+    })
+    return arr.join(';');
   }
+
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -128,7 +145,7 @@ const requestBody = async (workitemType, parent = undefined) => {
         cookie: parseCookies(response.headers),
         token: data['OperationResult']['SecurityToken']
     };
-    //console.log(cached)
+    console.log(cached)
     let createResponse = await requestBody('Story').then(createItem)
     if (createResponse['CreateResult']['Errors'].length > 0){
         console.log(createResponse['CreateResult']['Errors'])
@@ -145,12 +162,10 @@ const requestBody = async (workitemType, parent = undefined) => {
           await updateItem(ref, type, name + i);
         }
     }
-    
 }
 
-
   const argv = require('yargs')
-    .command('work', 'create and update item', (yargs) => {
+    .command('post', 'create and update item', (yargs) => {
         yargs
         .positional('name', {describe: 'new name of item', default: 'foo'})
         .positional('interval', {describe: 'interval in ms between update requests', default: 10000})
