@@ -39,29 +39,17 @@ const callSecurity = async() => {
     }
 }
 
-/*   const parseCookies = (headers) =>  {
-    const raw = headers.raw()['set-cookie'];
-    return raw.map((entry) => {
-      const parts = entry.split(';');
-      const cookiePart = parts[0];
-      if (cookiePart.includes('ZSESSIONID=') || cookiePart.includes('JSESSIONID=')){
-        return cookiePart;
-      }
-      
-    }).join(';');
-  } */
-
   const parseCookies = (headers) =>  {
     const raw = headers.raw()['set-cookie'];
-    const arr = [];
+    const cookies = [];
     raw.forEach((entry) => {
       const parts = entry.split(';');
       const cookiePart = parts[0];
       if (cookiePart.includes('ZSESSIONID=') || cookiePart.includes('JSESSIONID=')){
-        arr.push(cookiePart);
+        cookies.push(cookiePart);
       } 
     })
-    return arr.join(';');
+    return cookies.join(';');
   }
 
 
@@ -75,14 +63,14 @@ const requestBody = async (workitemType, parent = undefined) => {
         body = {"hierarchicalrequirement":{
         "workspace":`workspace/${workspaceOid}`,
         "project":`project/${projectOid}`, 
-        "name": `Rally Inator Story ${timestamp}`,
+        "name": `Story ${timestamp}`,
         "description": "Story via REST",
         "portfolioitem": parent}}
     } else if(workitemType.toLowerCase() == 'feature'){
         body = {"portfolioitem/feature":{
             "workspace":`workspace/${workspaceOid}`,
             "project":`project/${projectOid}`, 
-            "name": `Inator Feature ${timestamp}`,
+            "name": `Feature ${timestamp}`,
             "description": "Feature via REST"}}
     }
     return body;
